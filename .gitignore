@@ -1,0 +1,5 @@
+#Ignores virtualenv folder
+venv
+
+#Ignores DB file
+db.sqlite3
