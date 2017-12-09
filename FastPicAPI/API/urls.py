@@ -18,4 +18,6 @@ from API import views
 
 urlpatterns = [
     url(r'^$', views.v_upload_image),
+    url(r'create-room/$', views.create_room),
+    url(r'rooms/<str:room_name>$', views.enter_room)
 ]

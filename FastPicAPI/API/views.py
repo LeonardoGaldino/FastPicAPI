@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from FastPicAPI.settings import API_KEY, API_VERSION, API_URL
+from .models import Room
 
 # Custom imports
 import json
@@ -35,3 +36,25 @@ def v_upload_image(request):
     req = requests.post(API_URL, params=req_header_params, files=imgs)
 
     return JsonResponse(req.content, safe=False)
+
+
+@require_http_methods(["POST"])
+def create_room(request):
+    room_data = json.loads(request.body)
+    if room_data.get("name") and room_data.get("owner_name"):
+
+        if Room.objects.get(name=room_data.get("name")):
+            return JsonResponse({"error_message": "room with this name already created"}, status=400)
+
+        room = Room(name=room_data.get("name"), owner_name=room_data.get("owner_name"))
+        room.save()
+        return JsonResponse({"message": "room was created"}, safe=False)
+    else:
+        return JsonResponse({"error_message": "insuficient data to create room"}, safe=False,
+                            status=400)
+
+
+@require_http_methods(["GET", "POST"])
+def enter_room(request):
+
+    return None
