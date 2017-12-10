@@ -5,13 +5,15 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from FastPicAPI.settings import API_KEY, API_VERSION, API_URL
 from django.db import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
+
 # Custom imports
 import json
 import requests
 from models import OnlineUser
 from http_status_codes import OK, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR
+from FastPicAPI.settings import API_KEY, API_VERSION, API_URL
 
 # Views
 
@@ -56,20 +58,15 @@ def v_enter_room(request):
         return JsonResponse({'error': True, 'messageError': 'Username already taken!'}, safe=False, status=BAD_REQUEST)
     return JsonResponse({'error': False, 'content': 'User registered!'}, safe=False, status=OK)
 
-''' Comentado porque na reuniao, acordamos que pro MVP
-    so teriamos uma unica sala, que todos os usuarios entrarão ao entrar no site.
-
+@csrf_exempt
 @require_http_methods(["POST"])
-def create_room(request):
-    room_data = json.loads(request.body)
-    if room_data.get("name") and room_data.get("owner_name"):
-        if Room.objects.filter(name=room_data.get("name")).count() > 0:
-            return JsonResponse({"error_message": "room with this name already created"}, status=400)
-
-        room = Room(name=room_data.get("name"), owner_name=room_data.get("owner_name"))
-        room.save()
-        return JsonResponse({"message": "room was created"}, safe=False)
-    else:
-        return JsonResponse({"error_message": "insuficient data to create room"}, safe=False,
-                            status=400)
-'''
+def v_leave_room(request):
+    user_name = request.POST.get('userName', None)
+    if user_name == None:
+        return JsonResponse({'error': True, 'messageError': 'No username uploaded!'}, safe=False, status=BAD_REQUEST)
+    try:
+        user = OnlineUser.objects.get(name=user_name)
+        user.delete()
+    except ObjectDoesNotExist:
+        return JsonResponse({'error': True, 'messageError': 'User does not exists!'}, safe=False, status=BAD_REQUEST)
+    return JsonResponse({'error': False, 'content': 'User left!'}, safe=False, status=OK)
