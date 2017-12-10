@@ -17,5 +17,5 @@ from django.conf.urls import url
 from API import views
 
 urlpatterns = [
-    url(r'^$', views.v_upload_image),
+    url(r'^upload_img/$', views.v_upload_image),
 ]

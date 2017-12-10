@@ -12,26 +12,20 @@ import requests
 # Views
 
 @csrf_exempt
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["POST"])
 def v_upload_image(request):
-    if request.method == 'GET':
-        json_object = [{
-            'Leo': True
-        },
-        {
-            'Bormann': False
-        }]
+    uploaded_img = request.FILES.get('img', None)
+    if uploaded_img == None:    
+        return JsonResponse({'error': True, 'errorMessage': 'No image uploaded!'}, safe=False)
 
-        # Safe param equals False to send non dict objects
-        return JsonResponse(json_object, safe=False)
-    
-    # At this point, only method POST
-    uploaded_img = request.FILES['img']
-    imgs = [('images_file', ('temp.jpg', uploaded_img.read(), 'image/jpg'))]
+    img_type = uploaded_img.name.split('.')[-1]
+    img_name = 'uploaded_img.'+img_type
+    mime_type = 'image/' + img_type
+    imgs = { 'images_file': (img_name, uploaded_img.read(), mime_type) }
     req_header_params = {
         'api_key': API_KEY,
         'version': API_VERSION
     }
     req = requests.post(API_URL, params=req_header_params, files=imgs)
 
-    return JsonResponse(req.content, safe=False)
+    return JsonResponse({'error': False, 'content': req.content}, safe=False)
