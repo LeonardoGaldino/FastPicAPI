@@ -43,6 +43,19 @@ def v_get_online_users(request):
     except:
         return JsonResponse({'error': True, 'messageError': 'Internal Server Error'}, safe=False, status=INTERNAL_SERVER_ERROR)
 
+@csrf_exempt
+@require_http_methods(["POST"])
+def v_enter_room(request):
+    user_name = request.POST.get('userName', None)
+    if user_name == None:
+        return JsonResponse({'error': True, 'messageError': 'No username uploaded!'}, safe=False, status=BAD_REQUEST)
+    try:
+        OnlineUser.objects.create(name=user_name, points=0)
+    except IntegrityError:
+        #Catches username duplicated problem
+        return JsonResponse({'error': True, 'messageError': 'Username already taken!'}, safe=False, status=BAD_REQUEST)
+    return JsonResponse({'error': False, 'content': 'User registered!'}, safe=False, status=OK)
+
 ''' Comentado porque na reuniao, acordamos que pro MVP
     so teriamos uma unica sala, que todos os usuarios entrarão ao entrar no site.
 
@@ -60,32 +73,3 @@ def create_room(request):
         return JsonResponse({"error_message": "insuficient data to create room"}, safe=False,
                             status=400)
 '''
-
-@csrf_exempt
-@require_http_methods(["POST"])
-def v_enter_room(request):
-    user_name = request.POST.get('userName', None)
-    if user_name == None:
-        return JsonResponse({'error': True, 'messageError': 'No username uploaded!'}, safe=False, status=BAD_REQUEST)
-    try:
-        OnlineUser.objects.create(name=user_name, points=0)
-    except IntegrityError:
-        #Catches username duplicated problem
-        return JsonResponse({'error': True, 'messageError': 'Username already taken!'}, safe=False, status=BAD_REQUEST)
-    return JsonResponse({'error': False, 'content': 'User registered!'}, safe=False, status=OK)
-    
-'''
-    if request_data.get("room_name"):
-        room_name = request_data.get("room_name")
-        if Room.objects.filter(name=room_name):
-            room = Room.objects.get(name=room_name)
-            if room is not None:
-                user = OnlineUser.objects.get(name=request_data.get("user_name"))
-                room.participants.add(user)
-                return JsonResponse(status=200)
-        else:
-            return JsonResponse({"error_message": "there is no room with given name"}, status=404)
-
-    else:
-        return JsonResponse({"error_message": "insuficient data to enter room"}, safe=False,
-                            status=400)'''
