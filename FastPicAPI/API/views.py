@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 # Django Imports
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from FastPicAPI.settings import API_KEY, API_VERSION, API_URL
-from .models import Room, OnlineUser
+from models import OnlineUser
 
 # Custom imports
 import json
@@ -31,6 +33,17 @@ def v_upload_image(request):
 
     return JsonResponse({'error': False, 'content': req.content}, safe=False)
 
+@csrf_exempt
+@require_http_methods(["GET"])
+def v_get_online_users(request):
+    try:
+        online_users = list(OnlineUser.objects.all().values('name', 'points'))
+        return JsonResponse({'error': False, 'content': online_users}, safe=False)
+    except:
+        return JsonResponse({'error': True, 'messageError': 'Internal Server Error'}, safe=False)
+
+''' Comentado porque na reuniao, acordamos que pro MVP
+    so teriamos uma unica sala, que todos os usuarios entrarão ao entrar no site.
 
 @require_http_methods(["POST"])
 def create_room(request):
@@ -45,7 +58,6 @@ def create_room(request):
     else:
         return JsonResponse({"error_message": "insuficient data to create room"}, safe=False,
                             status=400)
-
 
 @require_http_methods(["GET"])
 def enter_room(request, **kwargs):
@@ -64,3 +76,4 @@ def enter_room(request, **kwargs):
     else:
         return JsonResponse({"error_message": "insuficient data to enter room"}, safe=False,
                             status=400)
+'''

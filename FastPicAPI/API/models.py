@@ -7,9 +7,11 @@ class OnlineUser(models.Model):
     name = models.CharField(unique=True, max_length=120)
     points = models.IntegerField()
 
+''' Comentado porque na reuniao, acordamos que pro MVP
+    so teriamos uma unica sala, que todos os usuarios entrarao ao entrar no site.
 
-# Create your models here.
 class Room(models.Model):
     name = models.CharField(max_length=120, unique=True)
     owner_name = models.CharField(max_length=120)
     participants = models.ManyToManyField(OnlineUser)
+'''
