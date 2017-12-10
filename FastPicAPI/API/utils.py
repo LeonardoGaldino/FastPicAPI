@@ -17,5 +17,6 @@ def classify_img(uploaded_img):
 
 def extract_classes(fetched_json):
     parsed_json = json.loads(fetched_json)
-    classes = parsed_json['images'][0]['classifiers'][0]['classes']
+    guesses = parsed_json['images'][0]['classifiers'][0]['classes']
+    classes = [guess['class'] for guess in guesses]
     return classes
