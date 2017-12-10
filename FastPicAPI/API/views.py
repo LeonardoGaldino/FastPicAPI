@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 # Custom imports
 import json
 import requests
-from models import OnlineUser
+from models import OnlineUser, Rank
 from http_status_codes import OK, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR
 from FastPicAPI.settings import API_KEY, API_VERSION, API_URL
 
@@ -42,6 +42,17 @@ def v_get_online_users(request):
     try:
         online_users = list(OnlineUser.objects.all().values('name', 'points'))
         return JsonResponse({'error': False, 'content': online_users}, safe=False)
+    except:
+        return JsonResponse({'error': True, 'messageError': 'Internal Server Error'}, safe=False, status=INTERNAL_SERVER_ERROR)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def v_get_rank(request):
+    try:
+        rank = Rank.objects.all().values('name', 'points')
+        if len(rank):
+            return JsonResponse({'error': False, 'content': rank[0]}, safe=False)
+        return JsonResponse({'error': False, 'content': {}}, safe=False)
     except:
         return JsonResponse({'error': True, 'messageError': 'Internal Server Error'}, safe=False, status=INTERNAL_SERVER_ERROR)
 

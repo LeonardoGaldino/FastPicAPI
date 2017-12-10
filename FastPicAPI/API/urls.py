@@ -17,8 +17,9 @@ from django.conf.urls import url
 from API import views
 
 urlpatterns = [
-    url(r'^uploadImg/$', views.v_upload_image),
     url(r'^onlineUsers/$', views.v_get_online_users),
+    url(r'^rank/$', views.v_get_rank),
+    url(r'^uploadImg/$', views.v_upload_image),
     url(r'^enterRoom/$', views.v_enter_room),
     url(r'^leaveRoom/$', views.v_leave_room),
     #url(r'create-room/$', views.create_room),
