@@ -3,3 +3,6 @@ venv
 
 #Ignores DB file
 db.sqlite3
+
+#Ignores all bytecode files
+/**/*.pyc
