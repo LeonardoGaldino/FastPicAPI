@@ -6,11 +6,12 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from FastPicAPI.settings import API_KEY, API_VERSION, API_URL
-from models import OnlineUser
-
+from django.db import IntegrityError
 # Custom imports
 import json
 import requests
+from models import OnlineUser
+from http_status_codes import OK, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR
 
 # Views
 
@@ -19,7 +20,7 @@ import requests
 def v_upload_image(request):
     uploaded_img = request.FILES.get('img', None)
     if uploaded_img == None:    
-        return JsonResponse({'error': True, 'errorMessage': 'No image uploaded!'}, safe=False)
+        return JsonResponse({'error': True, 'errorMessage': 'No image uploaded!'}, safe=False, status=BAD_REQUEST)
 
     img_type = uploaded_img.name.split('.')[-1]
     img_name = 'uploaded_img.'+img_type
@@ -40,7 +41,7 @@ def v_get_online_users(request):
         online_users = list(OnlineUser.objects.all().values('name', 'points'))
         return JsonResponse({'error': False, 'content': online_users}, safe=False)
     except:
-        return JsonResponse({'error': True, 'messageError': 'Internal Server Error'}, safe=False)
+        return JsonResponse({'error': True, 'messageError': 'Internal Server Error'}, safe=False, status=INTERNAL_SERVER_ERROR)
 
 ''' Comentado porque na reuniao, acordamos que pro MVP
     so teriamos uma unica sala, que todos os usuarios entrarão ao entrar no site.
@@ -58,10 +59,22 @@ def create_room(request):
     else:
         return JsonResponse({"error_message": "insuficient data to create room"}, safe=False,
                             status=400)
+'''
 
-@require_http_methods(["GET"])
-def enter_room(request, **kwargs):
-    request_data = kwargs
+@csrf_exempt
+@require_http_methods(["POST"])
+def v_enter_room(request):
+    user_name = request.POST.get('userName', None)
+    if user_name == None:
+        return JsonResponse({'error': True, 'messageError': 'No username uploaded!'}, safe=False, status=BAD_REQUEST)
+    try:
+        OnlineUser.objects.create(name=user_name, points=0)
+    except IntegrityError:
+        #Catches username duplicated problem
+        return JsonResponse({'error': True, 'messageError': 'Username already taken!'}, safe=False, status=BAD_REQUEST)
+    return JsonResponse({'error': False, 'content': 'User registered!'}, safe=False, status=OK)
+    
+'''
     if request_data.get("room_name"):
         room_name = request_data.get("room_name")
         if Room.objects.filter(name=room_name):
@@ -75,5 +88,4 @@ def enter_room(request, **kwargs):
 
     else:
         return JsonResponse({"error_message": "insuficient data to enter room"}, safe=False,
-                            status=400)
-'''
+                            status=400)'''
