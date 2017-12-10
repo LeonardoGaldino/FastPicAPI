@@ -9,11 +9,9 @@ from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 
 # Custom imports
-import json
-import requests
 from models import OnlineUser, Rank
 from http_status_codes import OK, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR
-from FastPicAPI.settings import API_KEY, API_VERSION, API_URL
+from utils import classify_img, extract_classes
 
 # Views
 
@@ -24,17 +22,10 @@ def v_upload_image(request):
     if uploaded_img == None:    
         return JsonResponse({'error': True, 'errorMessage': 'No image uploaded!'}, safe=False, status=BAD_REQUEST)
 
-    img_type = uploaded_img.name.split('.')[-1]
-    img_name = 'uploaded_img.'+img_type
-    mime_type = 'image/' + img_type
-    imgs = { 'images_file': (img_name, uploaded_img.read(), mime_type) }
-    req_header_params = {
-        'api_key': API_KEY,
-        'version': API_VERSION
-    }
-    req = requests.post(API_URL, params=req_header_params, files=imgs)
+    fetched_json = classify_img(uploaded_img)
+    classes = extract_classes(fetched_json)
 
-    return JsonResponse({'error': False, 'content': req.content}, safe=False)
+    return JsonResponse({'error': False, 'content': classes})
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -81,3 +72,4 @@ def v_leave_room(request):
     except ObjectDoesNotExist:
         return JsonResponse({'error': True, 'messageError': 'User does not exists!'}, safe=False, status=BAD_REQUEST)
     return JsonResponse({'error': False, 'content': 'User left!'}, safe=False, status=OK)
+    
