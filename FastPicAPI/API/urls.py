@@ -19,6 +19,7 @@ from API import views
 urlpatterns = [
     url(r'^onlineUsers/$', views.v_get_online_users),
     url(r'^rank/$', views.v_get_rank),
+    url(r'^currentObject/$', views.v_get_current_object),
     url(r'^uploadImg/$', views.v_upload_image),
     url(r'^enterRoom/$', views.v_enter_room),
     url(r'^leaveRoom/$', views.v_leave_room),

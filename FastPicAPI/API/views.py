@@ -9,7 +9,7 @@ from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 
 # Custom imports
-from models import OnlineUser, Rank
+from models import OnlineUser, Rank, PictureTarget
 from http_status_codes import OK, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR
 from utils import classify_img, extract_classes
 
@@ -46,6 +46,17 @@ def v_get_rank(request):
         return JsonResponse({'error': False, 'content': {}}, safe=False)
     except:
         return JsonResponse({'error': True, 'messageError': 'Internal Server Error'}, safe=False, status=INTERNAL_SERVER_ERROR)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def v_get_current_object(request):
+    try:
+        current_object = PictureTarget.objects.all().values('name')
+        if len(current_object):
+            return JsonResponse({'error': False, 'content': current_object[0]}, safe=False)
+        return JsonResponse({'error': False, 'content': {}}, safe=False)
+    except:
+        return JsonResponse({'error': True, 'messageError': 'Internal Server Error'}, safe=False, status=INTERNAL_SERVER_ERROR) 
 
 @csrf_exempt
 @require_http_methods(["POST"])
