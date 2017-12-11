@@ -12,3 +12,6 @@ class OnlineUser(models.Model):
 class Rank(models.Model):
     name = models.CharField(unique=True, max_length=120)
     points = models.IntegerField()
+
+class PictureTarget(models.Model):
+    name = models.CharField(max_length=120)
