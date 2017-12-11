@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 # Custom imports
 from models import OnlineUser, Rank, PictureTarget
 from http_status_codes import OK, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR
-from utils import classify_img, extract_classes
+from utils import classify_img, extract_classes, validate_class
 
 # Views
 
@@ -19,13 +19,24 @@ from utils import classify_img, extract_classes
 @require_http_methods(["POST"])
 def v_upload_image(request):
     uploaded_img = request.FILES.get('img', None)
+    user_name = request.POST.get('userName', None)
     if uploaded_img == None:    
         return JsonResponse({'error': True, 'errorMessage': 'No image uploaded!'}, safe=False, status=BAD_REQUEST)
-
+    if user_name == None:
+        return JsonResponse({'error': True, 'errorMessage': 'No username uploaded!'}, safe=False, status=BAD_REQUEST)
+    try:
+        user = OnlineUser.objects.get(name=user_name)
+    except ObjectDoesNotExist:
+        return JsonResponse({'error': True, 'errorMessage': 'User not registered!'}, safe=False, status=BAD_REQUEST)
     fetched_json = classify_img(uploaded_img)
     classes = extract_classes(fetched_json)
-
-    return JsonResponse({'error': False, 'content': classes})
+    current_object = PictureTarget.objects.all()[0].name
+    correct = validate_class(current_object, classes)
+    if correct:
+        user.points += 1
+        user.save()
+        return JsonResponse({'error': False, 'content': {'correct': True}}, safe=False)
+    return JsonResponse({'error': False, 'content': {correct: False}})
 
 @csrf_exempt
 @require_http_methods(["GET"])
