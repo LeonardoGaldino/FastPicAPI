@@ -15,3 +15,4 @@ class Rank(models.Model):
 
 class PictureTarget(models.Model):
     name = models.CharField(max_length=120)
+    nextChange = models.DateTimeField(auto_now=True)

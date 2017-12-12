@@ -26,7 +26,7 @@ SECRET_KEY = 'w%9$^d)anh*xk-6a76g@n_!0%tf57*+=jann(dhk-hjj1$!20g'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'API',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -128,3 +130,5 @@ environ.Env.read_env(os.path.join(str(ROOT_PATH), '.env'))
 API_KEY = env('API_KEY')
 API_VERSION = env('API_VERSION')
 API_URL = env('API_URL')
+
+CORS_ORIGIN_ALLOW_ALL = True

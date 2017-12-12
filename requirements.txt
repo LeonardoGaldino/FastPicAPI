@@ -2,3 +2,4 @@ django==1.10
 requests
 django-environ
 python-crontab==2.2.8
+django-cors-headers
