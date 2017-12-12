@@ -70,10 +70,8 @@ def v_get_rank(request):
 def v_get_current_object(request):
     try:
         _1MINUTE = 60
-        _3HOURS = 60*60*3
         current_object = PictureTarget.objects.all().values('name', 'nextChange')[0]
         current_object['nextChange'] += datetime.timedelta(seconds=_1MINUTE) 
-        current_object['nextChange'] -= datetime.timedelta(seconds=_3HOURS) 
         return JsonResponse({'error': False, 'content': current_object}, safe=False)
     except:
         return JsonResponse({'error': True, 'messageError': 'Internal Server Error'}, safe=False, status=INTERNAL_SERVER_ERROR) 
