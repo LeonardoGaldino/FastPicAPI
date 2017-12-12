@@ -43,8 +43,7 @@ def v_upload_image(request):
     if correct:
         user.points += 1
         user.save()
-        return JsonResponse({'error': False, 'content': {'correct': True}}, safe=False)
-    return JsonResponse({'error': False, 'content': {correct: False}})
+    return JsonResponse({'error': False, 'content': {'correct': correct}}, safe=False)
 
 @csrf_exempt
 @require_http_methods(["GET"])

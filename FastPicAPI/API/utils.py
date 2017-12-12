@@ -27,10 +27,17 @@ def classify_img(uploaded_img, user_name, mime_type):
     return req.content
 
 def extract_classes(fetched_json):
-    parsed_json = json.loads(fetched_json)
-    guesses = parsed_json['images'][0]['classifiers'][0]['classes']
-    classes = [guess['class'].lower() for guess in guesses]
-    return classes
+    try:
+        parsed_json = json.loads(fetched_json)
+        print parsed_json
+        guesses = parsed_json['images'][0]['classifiers'][0]['classes']
+        classes = [guess['class'].lower() for guess in guesses]
+        return classes
+    except Exception, e:
+        f = open('errors', 'a')
+        f.write(str(e)+'\n')
+        f.close()
+        return []
 
 def validate_class(currentObject, classes):
     for _class in classes:
