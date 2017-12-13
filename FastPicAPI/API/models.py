@@ -5,6 +5,7 @@ from django.db import models
 class OnlineUser(models.Model):
     name = models.CharField(unique=True, max_length=120)
     points = models.IntegerField()
+    lastActivity = models.DateTimeField(auto_now=True)
 
 # This table will save the name of the player who got the highest number of points
 # And also the number of points
