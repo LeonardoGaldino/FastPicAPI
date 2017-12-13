@@ -2,6 +2,8 @@ from FastPicAPI.settings import API_KEY, API_VERSION, API_URL
 import requests
 import json
 from base64 import decodestring
+from models import PictureTarget
+from datetime import datetime
 
 
 def b64toFile(img_b64, img_name, img_type):
@@ -29,7 +31,6 @@ def classify_img(uploaded_img, user_name, mime_type):
 def extract_classes(fetched_json):
     try:
         parsed_json = json.loads(fetched_json)
-        print parsed_json
         guesses = parsed_json['images'][0]['classifiers'][0]['classes']
         classes = [guess['class'].lower() for guess in guesses]
         return classes
@@ -44,3 +45,10 @@ def validate_class(currentObject, classes):
         if _class.count(currentObject) >= 1:
             return True
     return False
+
+
+def get_current_punctuation():
+    start_time = PictureTarget.objects.all()[0].nextChange
+    start_time = start_time.replace(tzinfo=None)
+    cur_time = datetime.utcnow()
+    return (60-int((cur_time-start_time).total_seconds()))

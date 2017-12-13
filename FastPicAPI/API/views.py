@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 # Custom imports
 from models import OnlineUser, Rank, PictureTarget
 from http_status_codes import OK, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR
-from utils import classify_img, extract_classes, validate_class
+from utils import classify_img, extract_classes, validate_class, get_current_punctuation
 import json
 import datetime
 
@@ -41,7 +41,7 @@ def v_upload_image(request):
     current_object = PictureTarget.objects.all()[0].name
     correct = validate_class(current_object, classes)
     if correct:
-        user.points += 1
+        user.points += get_current_punctuation()
         user.save()
     return JsonResponse({'error': False, 'content': {'correct': correct}}, safe=False)
 
