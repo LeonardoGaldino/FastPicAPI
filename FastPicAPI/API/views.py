@@ -36,6 +36,7 @@ def v_upload_image(request):
         user = OnlineUser.objects.get(name=user_name)
     except ObjectDoesNotExist:
         return JsonResponse({'error': True, 'errorMessage': 'User not registered!'}, safe=False, status=BAD_REQUEST)
+    user.updateLastActivity()
     fetched_json = classify_img(uploaded_imgB64, user_name, mime_type)
     classes = extract_classes(fetched_json)
     current_object = PictureTarget.objects.all()[0].name
