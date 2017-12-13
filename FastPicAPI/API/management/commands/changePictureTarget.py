@@ -2,8 +2,9 @@ from django.core.management.base import BaseCommand, CommandError
 from API.models import PictureTarget
 from random import randint
 
-pictureNames = ['pen', 'notebook', 'pencil', 'mouse', 'eraser', 'scissors', 'banana',
-                'beer', 'cellphone', 'cap', 'coat', 'knife', 'ball', 'dog', 'cat']
+pictureNames = ['eraser', 'bag', 'notebook', 'pen', 'credit card', 'wallet', 'key',
+                'toothbrush', 'headphone', 'water bottle', 'pencil', 'mouse', 'glasses', 
+                'clock', 'sandals', 'cellphone', 'keyboard']
 
 class Command(BaseCommand):
     help = 'Changes picture target'
