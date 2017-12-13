@@ -5,7 +5,7 @@ from datetime import datetime
 
 class Command(BaseCommand):
     help = 'Removes all away players'
-    maxAwayTime = 15
+    maxAwayTime = 600 # 10 minutes
 
     def handle(self, *args, **options):
         users = OnlineUser.objects.all()
